@@ -42,12 +42,13 @@ export default {
         player = dv.createAudioPlayer();
         dispatcher = connection.subscribe(player);
         const resource = dv.createAudioResource(radioURL);
-        await sleep(5000)
         player.play(resource);
         player.on(dv.AudioPlayerStatus.Idle, async () => {
           const newResource = dv.createAudioResource(radioURL);
-          await sleep(5000)
           player.play(newResource);
+        });
+        player.on('error', (error) => {
+          console.error(error);
         });
       } catch (e) {
         try {
@@ -55,10 +56,10 @@ export default {
           message.channel.send(L._U(guildData.locale, "stream_error"));
         } catch (e) {
           if (guildData.home) {
-          let s = client.channels.cache.get(guildData.home)
+            let s = client.channels.cache.get(guildData.home)
             if (s) s.guild.channels.cache.filter((c) => c.type === "GUILD_TEXT")
-            .find((x) => x.position == 0)
-            .send(L._U(guildData.locale, "stream_error"));
+              .find((x) => x.position == 0)
+              .send(L._U(guildData.locale, "stream_error"));
           }
         }
       }
